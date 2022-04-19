@@ -7,6 +7,9 @@ import cv2
 from PIL import Image
 import pytesseract
 import re
+
+
+import cgi
 pytesseract.pytesseract.tesseract_cmd = 'C:\Program Files\Tesseract-OCR/tesseract.exe'
 # import easyocr
 #Detecting numberplate
@@ -146,15 +149,21 @@ array=[]
 
 dir = os.path.dirname(__file__)
 import pandas as pd
-df = pd.read_excel('reg_users.xlsx')
-reg_users = df['Registered'].tolist()
-
+import sqlite3
 
 def search_number_plate(file_name):
-    print('1')
+
+    conn = sqlite3.connect('myproject/data.sqlite')
+    cur = conn.cursor()
+    cur.execute("select distinct reg_number from number_plate")
+    registered_numbers = cur.fetchall()
+    df = pd.DataFrame(registered_numbers)
+    df.columns = ['Registered']
+    reg_users = df['Registered'].tolist()
+    conn.close()
+
     dir_1 = os.path.join(dir, file_name)
     for img in glob.glob(dir_1) :
-        print('1')
         img=cv2.imread(img)
         
         img2 = cv2.resize(img, (600, 600))
@@ -175,7 +184,10 @@ def search_number_plate(file_name):
             if i not in reg_users:
                 # send notification
                 print(i, '    -----    is not registered')
+                return str(i)+'    -----    is not registered'
             else:
                 print(i, '    -----    is registered')
+                return str(i)+'    -----    is registered'
+    return i
 
     			
