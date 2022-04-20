@@ -14,7 +14,7 @@ def home():
 def upload_file():
    if request.method == 'POST':
       f = request.files['file']
-      file_name = 'uploads/'+str(secure_filename(f.filename))
+      file_name = 'uploads/'+str('1.jpeg')
       f.save(file_name)
       x = search_number_plate(file_name)
       print('file uploaded successfully')

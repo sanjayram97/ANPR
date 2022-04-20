@@ -163,6 +163,8 @@ def search_number_plate(file_name):
     conn.close()
 
     dir_1 = os.path.join(dir, file_name)
+    print('check')
+    print(dir_1)
     for img in glob.glob(dir_1) :
         img=cv2.imread(img)
         
