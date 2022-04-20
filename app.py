@@ -4,7 +4,7 @@ from program import *
 from myproject import app, db
 from myproject.models import NumberPlate
 import sqlite3
-
+basedir = os.path.abspath(os.path.dirname(__file__))
 
 @app.route('/')
 def home():
@@ -14,8 +14,10 @@ def home():
 def upload_file():
    if request.method == 'POST':
       f = request.files['file']
-      file_name = 'uploads/'+str('1.jpeg')
+      file_name = 'uploads/'+str(secure_filename(f.filename))
       f.save(file_name)
+      print('file saved', os.path.join(basedir, 'uploads', str(secure_filename(f.filename))))
+      file_name = os.path.join(basedir, 'uploads', str(secure_filename(f.filename)))
       x = search_number_plate(file_name)
       print('file uploaded successfully')
       return render_template('button1.html', x = x)

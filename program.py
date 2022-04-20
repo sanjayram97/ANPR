@@ -152,7 +152,10 @@ import pandas as pd
 import sqlite3
 
 def search_number_plate(file_name):
-
+    array=[]
+    print('In function')
+    print(file_name)
+    print('In function')
     conn = sqlite3.connect('myproject/data.sqlite')
     cur = conn.cursor()
     cur.execute("select distinct reg_number from number_plate")
@@ -165,31 +168,31 @@ def search_number_plate(file_name):
     dir_1 = os.path.join(dir, file_name)
     print('check')
     print(dir_1)
-    for img in glob.glob(dir_1) :
-        img=cv2.imread(img)
-        
-        img2 = cv2.resize(img, (600, 600))
-        cv2.imshow("Image of car ",img2)
-        cv2.waitKey(1000)
-        cv2.destroyAllWindows()
-        
-        
-        number_plate=number_plate_detection(img)
-        res2 = str("".join(re.split("[^a-zA-Z0-9]*", number_plate)))
-        res2=res2.upper()
-        print(res2)
+    # for img in glob.glob(dir_1) :
+    img=cv2.imread(file_name)
     
-        array.append(res2)   
-        print('Number detected', array)
-        
-        for i in array:
-            if i not in reg_users:
-                # send notification
-                print(i, '    -----    is not registered')
-                return str(i)+'    -----    is not registered'
-            else:
-                print(i, '    -----    is registered')
-                return str(i)+'    -----    is registered'
-    return i
+    img2 = cv2.resize(img, (600, 600))
+    cv2.imshow("Image of car ",img2)
+    cv2.waitKey(1000)
+    cv2.destroyAllWindows()
+    
+    
+    number_plate=number_plate_detection(img)
+    res2 = str("".join(re.split("[^a-zA-Z0-9]*", number_plate)))
+    res2=res2.upper()
+    print(res2)
+
+    array.append(res2)   
+    print('Number detected', array)
+    
+    for i in array:
+        if i not in reg_users:
+            # send notification
+            print(i, '    -----    is not registered')
+            return str(i)+'    -----    is not registered'
+        else:
+            print(i, '    -----    is registered')
+            return str(i)+'    -----    is registered'
+    # return i
 
     			
