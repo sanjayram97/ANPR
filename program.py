@@ -7,6 +7,7 @@ import cv2
 from PIL import Image
 import pytesseract
 import re
+import smtplib
 
 
 import cgi
@@ -188,8 +189,18 @@ def search_number_plate(file_name):
     for i in array:
         if i not in reg_users:
             # send notification
+            server= smtplib.SMTP_SSL("smtp.gmail.com",465)
+            server.login("xyz56518@gmail.com","Saran8400!")
+            server.sendmail("xyz56518@gmail.com",
+                            "sarveshsivakumar2000@gmail.com",
+                            "Unauthorised vehicle number "+i+" has entered the apartments")
+            server.quit()
+
             print(i, '    -----    is not registered')
             return str(i)+'    -----    is not registered'
+
+
+            
         else:
             print(i, '    -----    is registered')
             return str(i)+'    -----    is registered'

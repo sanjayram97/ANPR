@@ -4,6 +4,7 @@ from program import *
 from myproject import app, db
 from myproject.models import NumberPlate
 import sqlite3
+import os
 basedir = os.path.abspath(os.path.dirname(__file__))
 
 @app.route('/')
@@ -35,20 +36,58 @@ def register_files():
         record = NumberPlate(number, name)
         db.session.add(record)
         db.session.commit()
-        return 'record added'
+        return render_template('recadded.html', value='added')
     return render_template('register.html')
     
 
 
 @app.route('/viewnumbersreg', methods=['POST','GET'])
 def viewsal():
-    conn = sqlite3.connect('myproject/data.sqlite')
-    cur = conn.cursor()
-    cur.execute("select * from number_plate")
-    rows = cur.fetchall()
-    print(rows)
-    conn.close()
-    return str(rows)
+    if request.method == 'GET':
+        strn=""
+        conn = sqlite3.connect('myproject/data.sqlite')
+        #cur = conn.cursor()
+        #cur.execute("select * from number_plate")
+        #conn.commit()
+        #rows = cur.fetchall()
+        conn.row_factory = sqlite3.Row  
+        cur = conn.cursor()  
+        cur.execute("select * from number_plate")  
+        rows = cur.fetchall()  
+        lst=[]
+        for records in rows:
+            strn="Name: "+records[1]+" -> Number: "+records[0]
+            lst.append(strn)
+            strn=""
+        lst = '\n'.join(lst)
+        print(lst)
+        conn.close()
+        return render_template("registered.html",rows = rows)   
+
+        
+    
+
+
+#added portion
+@app.route('/deleterow', methods=['POST','GET'])
+def delrow():
+    if request.method == 'POST':
+        name = request.form.get('uname')
+        number = request.form.get('no')
+        print(name)
+        print(number)
+        conn = sqlite3.connect('myproject/data.sqlite')
+        cur = conn.cursor()
+        
+        cur.execute("""DELETE from number_plate where reg_name = ?""", (name,))
+        conn.commit()
+        records = cur.fetchall()
+        db.session.commit()
+        conn.close()
+        return render_template('recadded.html', value='deleted')
+    return render_template('delete.html')
+    
+
 
 if __name__ == "__main__":
     app.run(debug=True)
