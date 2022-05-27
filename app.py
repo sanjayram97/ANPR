@@ -3,6 +3,7 @@ from werkzeug.utils import secure_filename
 from program import *
 from myproject import app, db
 from myproject.models import NumberPlate
+from myproject.models import visitednumbers
 import sqlite3
 import os
 basedir = os.path.abspath(os.path.dirname(__file__))
@@ -14,17 +15,36 @@ def home():
 @app.route('/uploader', methods = ['GET', 'POST'])
 def upload_file():
    if request.method == 'POST':
-      f = request.files['file']
-      file_name = 'uploads/'+str(secure_filename(f.filename))
-      f.save(file_name)
-      print('file saved', os.path.join(basedir, 'uploads', str(secure_filename(f.filename))))
-      file_name = os.path.join(basedir, 'uploads', str(secure_filename(f.filename)))
-      x = search_number_plate(file_name)
-      print('file uploaded successfully')
-      return render_template('button1.html', x = x)
+        f = request.files['file']
+        file_name = 'uploads/'+str(secure_filename(f.filename))
+        f.save(file_name)
+        print('file saved', os.path.join(basedir, 'uploads', str(secure_filename(f.filename))))
+        file_name = os.path.join(basedir, 'uploads', str(secure_filename(f.filename)))
+        x = search_number_plate(file_name)
+        y = print_number_plate(file_name)
+        print(y)
+
+        print('file uploaded successfully')
+
+        with sqlite3.connect("visitor.db") as con:  
+            cur = con.cursor()  
+            cur.execute("INSERT into Visitors (Number) values (?)",[y])  
+            con.commit()  
+            msg = "Visitor successfully Added"  
+        return render_template('button1.html', x = x)
 
 
-
+@app.route('/visitors', methods=['GET', 'POST'])
+def visitors_list():
+    con = sqlite3.connect("visitor.db")  
+    con.row_factory = sqlite3.Row  
+    cur = con.cursor()  
+    #cur.execute("DELETE FROM Visitors WHERE Number='a'")
+    #con.commit()
+    cur.execute("SELECT ROW_NUMBER() OVER (ORDER BY Number) AS Id, Number, Visited_at FROM Visitors")  
+    rows = cur.fetchall()  
+    return render_template("view.html",rows = rows)
+    
 
 @app.route('/register', methods=['GET', 'POST'])
 def register_files():

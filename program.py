@@ -190,7 +190,7 @@ def search_number_plate(file_name):
         if i not in reg_users:
             # send notification
             server= smtplib.SMTP_SSL("smtp.gmail.com",465)
-            server.login("xyz56518@gmail.com","Saran8400!")
+            server.login("xyz56518@gmail.com","saran2000!")
             server.sendmail("xyz56518@gmail.com",
                             "sarveshsivakumar2000@gmail.com",
                             "Unauthorised vehicle number "+i+" has entered the apartments")
@@ -204,6 +204,41 @@ def search_number_plate(file_name):
         else:
             print(i, '    -----    is registered')
             return str(i)+'    -----    is registered'
-    # return i
+    return i
 
+def print_number_plate(file_name):
+    array=[]
+    print('In function')
+    print(file_name)
+    print('In function')
+    conn = sqlite3.connect('myproject/data.sqlite')
+    cur = conn.cursor()
+    cur.execute("select distinct reg_number from number_plate")
+    registered_numbers = cur.fetchall()
+    df = pd.DataFrame(registered_numbers)
+    df.columns = ['Registered']
+    reg_users = df['Registered'].tolist()
+    conn.close()
+
+    dir_1 = os.path.join(dir, file_name)
+    print('check')
+    print(dir_1)
+    # for img in glob.glob(dir_1) :
+    img=cv2.imread(file_name)
+    
+    img2 = cv2.resize(img, (600, 600))
+    cv2.imshow("Image of car ",img2)
+    cv2.waitKey(1000)
+    cv2.destroyAllWindows()
+    
+    
+    number_plate=number_plate_detection(img)
+    res2 = str("".join(re.split("[^a-zA-Z0-9]*", number_plate)))
+    res2=res2.upper()
+    print(res2)
+
+    array.append(res2)   
+    print('Number detected', array)
+    
+    return res2
     			
