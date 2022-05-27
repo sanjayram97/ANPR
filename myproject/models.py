@@ -1,6 +1,5 @@
 from myproject import db
 
-
 class NumberPlate(db.Model):
     __tablename__ = "number_plate"
     reg_number = db.Column(db.String(64), unique=True, index=True, primary_key=True)
@@ -9,3 +8,10 @@ class NumberPlate(db.Model):
     def __init__(self, reg_number, reg_name):
         self.reg_number = reg_number
         self.reg_name = reg_name
+
+class visitednumbers(db.Model):
+    __tablename__ = "PVisited"
+    VNumber = db.Column(db.String(64), unique=True, index=True, primary_key=True)
+    
+    def __init__(self, vnumber):
+        self.vnumber = vnumber
